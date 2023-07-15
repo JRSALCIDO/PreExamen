@@ -9,6 +9,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import modelo.UsuarioDbHelper;
+import modelo.UsuariosDb;
+
 public class RegistroActivity extends AppCompatActivity {
 
     private EditText etNombre, etCorreo, etContraseña, etConfirmarContraseña;
