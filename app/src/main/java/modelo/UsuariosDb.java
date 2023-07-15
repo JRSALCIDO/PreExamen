@@ -4,136 +4,105 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.preexamen.Usuario;
 
 import java.util.ArrayList;
 
-public class UsuariosDb implements Persistencia, Proyeccion {
+public class UsuariosDb implements Persistencia, Proyeccion{
 
-    private UsuarioDbHelper dbHelper;
+    private Context context;
+    private UsuarioDbHelper helper;
     private SQLiteDatabase db;
 
-    public UsuariosDb(Context context) {
-        dbHelper = new UsuarioDbHelper(context);
+    public UsuariosDb(Context context, UsuarioDbHelper helper) {
+        this.context = context;
+        this.helper = helper;
     }
+
+    public UsuariosDb(Context context) {
+        this.context = context;
+        this.helper = new UsuarioDbHelper(this.context);
+    }
+
 
     @Override
     public void openDataBase() {
-        if (db == null || !db.isOpen()) {
-            db = dbHelper.getWritableDatabase();
-        }
+        db = helper.getWritableDatabase();
     }
 
     @Override
     public void closeDataBase() {
-        if (db != null && db.isOpen()) {
-            db.close();
-        }
+        helper.close();
     }
 
+    @Override
     public long insertUsuario(Usuario usuario) {
-        openDataBase();
+
         ContentValues values = new ContentValues();
-        values.put(DefineTabla.Usuarios.COLUMN_NOMBRE_USUARIO, usuario.getNombreUsuario());
-        values.put(DefineTabla.Usuarios.COLUMN_CORREO, usuario.getCorreo());
-        values.put(DefineTabla.Usuarios.COLUMN_CONTRASENA, usuario.getContrasena());
-        long id = db.insert(DefineTabla.Usuarios.TABLE_NAME, null, values);
-        closeDataBase();
-        return id;
-    }
+        values.put(DefineTabla.Usuarios.COLUMN_NAME_NOMBRE_USUARIO, usuario.getNombreUsuario());
+        values.put(DefineTabla.Usuarios.COLUMN_NAME_CORREO, usuario.getCorreo());
+        values.put(DefineTabla.Usuarios.COLUMN_NAME_CONTRASENA, usuario.getContrasena());
 
-    public long updateUsuario(Usuario usuario) {
-        openDataBase();
-        ContentValues values = new ContentValues();
-        values.put(DefineTabla.Usuarios.COLUMN_NOMBRE_USUARIO, usuario.getNombreUsuario());
-        values.put(DefineTabla.Usuarios.COLUMN_CORREO, usuario.getCorreo());
-        values.put(DefineTabla.Usuarios.COLUMN_CONTRASENA, usuario.getContrasena());
-        long rowsAffected = db.update(
-                DefineTabla.Usuarios.TABLE_NAME,
-                values,
-                DefineTabla.Usuarios.COLUMN_ID + " = ?",
-                new String[]{String.valueOf(usuario.getId())});
-        closeDataBase();
-        return rowsAffected;
-    }
+        this.openDataBase();
+        long num = db.insert(DefineTabla.Usuarios.TABLE_NAME, null, values);
+        this.closeDataBase();
+        Log.d("agregar", "insertUsuario: " + num);
 
-    public void deleteUsuario(int id) {
-        openDataBase();
-        db.delete(
-                DefineTabla.Usuarios.TABLE_NAME,
-                DefineTabla.Usuarios.COLUMN_ID + " = ?",
-                new String[]{String.valueOf(id)});
-        closeDataBase();
+        return num;
     }
-
 
     @Override
     public Usuario getUsuario(String correo) {
-        openDataBase();
-        String[] projection = {
-                DefineTabla.Usuarios.COLUMN_ID,
-                DefineTabla.Usuarios.COLUMN_NOMBRE_USUARIO,
-                DefineTabla.Usuarios.COLUMN_CORREO,
-                DefineTabla.Usuarios.COLUMN_CONTRASENA
-        };
-        String selection = DefineTabla.Usuarios.COLUMN_CORREO + " = ?";
-        String[] selectionArgs = {correo};
+        db = helper.getWritableDatabase();
+
         Cursor cursor = db.query(
                 DefineTabla.Usuarios.TABLE_NAME,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null);
-        Usuario usuario = null;
-        if (cursor.moveToFirst()) {
-            usuario = readUsuario(cursor);
+                DefineTabla.Usuarios.REGISTRO,
+                DefineTabla.Usuarios.COLUMN_NAME_CORREO + " = ?",
+                new String[]{correo},
+                null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            Usuario usuario = readUsuario(cursor);
+            cursor.close();
+            return usuario;
         }
-        cursor.close();
-        return usuario;
+        return null;
     }
-
-
     @Override
     public ArrayList<Usuario> allUsuarios() {
-        openDataBase();
-        String[] projection = {
-                DefineTabla.Usuarios.COLUMN_ID,
-                DefineTabla.Usuarios.COLUMN_NOMBRE_USUARIO,
-                DefineTabla.Usuarios.COLUMN_CORREO,
-                DefineTabla.Usuarios.COLUMN_CONTRASENA
-        };
+        this.openDataBase(); // Abre la base de datos
+
         Cursor cursor = db.query(
                 DefineTabla.Usuarios.TABLE_NAME,
-                projection,
-                null,
-                null,
-                null,
-                null,
-                null);
-        ArrayList<Usuario> usuarios = new ArrayList<>();
-        while (cursor.moveToNext()) {
+                DefineTabla.Usuarios.REGISTRO,
+                null, null, null, null, null);
+        ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()){
             Usuario usuario = readUsuario(cursor);
             usuarios.add(usuario);
+            cursor.moveToNext();
         }
+
         cursor.close();
+
+        this.closeDataBase();
         return usuarios;
     }
 
+
     @Override
     public Usuario readUsuario(Cursor cursor) {
-        int idIndex = cursor.getColumnIndexOrThrow(DefineTabla.Usuarios.COLUMN_ID);
-        int nombreUsuarioIndex = cursor.getColumnIndexOrThrow(DefineTabla.Usuarios.COLUMN_NOMBRE_USUARIO);
-        int correoIndex = cursor.getColumnIndexOrThrow(DefineTabla.Usuarios.COLUMN_CORREO);
-        int contrasenaIndex = cursor.getColumnIndexOrThrow(DefineTabla.Usuarios.COLUMN_CONTRASENA);
-
-        int id = cursor.getInt(idIndex);
-        String nombreUsuario = cursor.getString(nombreUsuarioIndex);
-        String correo = cursor.getString(correoIndex);
-        String contrasena = cursor.getString(contrasenaIndex);
-
-        return new Usuario(id, nombreUsuario, correo, contrasena);
+        Usuario usuario = new Usuario();
+        usuario.setId(cursor.getInt(0));
+        usuario.setNombreUsuario(cursor.getString(1));
+        usuario.setCorreo(cursor.getString(2));
+        usuario.setContrasena(cursor.getString(3));
+        return usuario;
     }
 }
+

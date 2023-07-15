@@ -9,45 +9,71 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class AdapterUsuario extends RecyclerView.Adapter<AdapterUsuario.UsuarioViewHolder> {
-
-    private List<Usuario> usuarios;
+public class AdapterUsuario extends RecyclerView.Adapter<AdapterUsuario.ViewHolder> {
     private Context context;
+    private ArrayList<Usuario> listaUsuarios;
+    private OnItemClickListener itemClickListener;
 
-    public AdapterUsuario(List<Usuario> usuarios, Context context) {
-        this.usuarios = usuarios;
+    public AdapterUsuario(ArrayList<Usuario> listaUsuarios, Context context) {
+        this.listaUsuarios = listaUsuarios;
         this.context = context;
     }
 
     @NonNull
     @Override
-    public UsuarioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.usuarios_items, parent, false);
-        return new UsuarioViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UsuarioViewHolder holder, int position) {
-        Usuario usuario = usuarios.get(position);
-        holder.tvNombre.setText(usuario.getNombreUsuario());
-        holder.tvCorreo.setText(usuario.getCorreo());
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Usuario usuario = listaUsuarios.get(position);
+        if (usuario != null) {
+            holder.txtNombreUsuario.setText(usuario.getNombreUsuario());
+            holder.txtCorreo.setText(usuario.getCorreo());
+        }
     }
 
     @Override
     public int getItemCount() {
-        return usuarios.size();
+        return listaUsuarios.size();
     }
 
-    public class UsuarioViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNombre;
-        TextView tvCorreo;
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.itemClickListener = listener;
+    }
 
-        public UsuarioViewHolder(@NonNull View itemView) {
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView txtNombreUsuario;
+        private TextView txtCorreo;
+
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvNombre = itemView.findViewById(R.id.tvNombre);
-            tvCorreo = itemView.findViewById(R.id.tvCorreo);
+            txtNombreUsuario = itemView.findViewById(R.id.tvNombre);
+            txtCorreo = itemView.findViewById(R.id.tvCorreo);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            if (itemClickListener != null) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    itemClickListener.onItemClick(view, position);
+                }
+            }
+        }
+    }
+
+    public void setUsuarioList(ArrayList<Usuario> listaUsuarios) {
+        this.listaUsuarios = listaUsuarios;
+        notifyDataSetChanged();
     }
 }

@@ -7,7 +7,8 @@ import com.example.preexamen.Usuario;
 import java.util.ArrayList;
 
 public interface Proyeccion {
-    Usuario getUsuario(String correo);
-    ArrayList<Usuario> allUsuarios();
-    Usuario readUsuario(Cursor cursor);
+    public Usuario getUsuario(String correo);
+    public ArrayList<Usuario> allUsuarios();
+    public Usuario readUsuario(Cursor cursor);
 }
+

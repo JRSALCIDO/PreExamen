@@ -6,35 +6,38 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class UsuarioDbHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "user2.db";
+    private static final String TEXT_TYPE = " TEXT";
+    private static final String INTEGER_TYPE = " INTEGER";
+    private static final String COMMA_SEP = " ,";
+    private static final String SQL_CREATE_USUARIO = "CREATE TABLE " +
+            DefineTabla.Usuarios.TABLE_NAME + " (" +
+            DefineTabla.Usuarios.COLUMN_NAME_ID + " INTEGER PRIMARY KEY, " +
+            DefineTabla.Usuarios.COLUMN_NAME_NOMBRE_USUARIO + TEXT_TYPE + COMMA_SEP +
+            DefineTabla.Usuarios.COLUMN_NAME_CORREO + TEXT_TYPE + COMMA_SEP +
+            DefineTabla.Usuarios.COLUMN_NAME_CONTRASENA + TEXT_TYPE + ")";
+
+    private static final String SQL_DELETE_USUARIO = "DROP TABLE IF EXISTS " +
+            DefineTabla.Usuarios.TABLE_NAME;
+
+    private static final String DATABASE_NAME = "db1";
     private static final int DATABASE_VERSION = 1;
 
-    private static final String SQL_CREATE_USUARIO =
-            "CREATE TABLE " +
-                    DefineTabla.Usuarios.TABLE_NAME + " (" +
-                    DefineTabla.Usuarios.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    DefineTabla.Usuarios.COLUMN_NOMBRE_USUARIO + " TEXT, " +
-                    DefineTabla.Usuarios.COLUMN_CORREO + " TEXT UNIQUE, " +
-                    DefineTabla.Usuarios.COLUMN_CONTRASENA + " TEXT)";
-
-    private static final String SQL_DELETE_USUARIO =
-            "DROP TABLE IF EXISTS " + DefineTabla.Usuarios.TABLE_NAME;
-
-    public UsuarioDbHelper(Context context) {
+    public UsuarioDbHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SQL_CREATE_USUARIO);
+    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.execSQL(SQL_CREATE_USUARIO);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(SQL_DELETE_USUARIO);
-        onCreate(db);
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        sqLiteDatabase.execSQL(SQL_DELETE_USUARIO);
+        onCreate(sqLiteDatabase);
     }
 }
+
 
 
 

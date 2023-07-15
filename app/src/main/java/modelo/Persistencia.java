@@ -3,10 +3,8 @@ package modelo;
 import com.example.preexamen.Usuario;
 
 public interface Persistencia {
-    void openDataBase();
-    void closeDataBase();
-    long insertUsuario(Usuario usuario);
-    long updateUsuario(Usuario usuario);
-    void deleteUsuario(int id);
+    public void openDataBase();
+    public void closeDataBase();
+    public long insertUsuario(Usuario usuario);
 }
 
