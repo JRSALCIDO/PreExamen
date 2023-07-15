@@ -47,8 +47,8 @@ public class MiAdaptador extends BaseAdapter {
             view = convertView;
         }
 
-        TextView nombre = view.findViewById(R.id.tvNombre);
-        TextView correo = view.findViewById(R.id.tvCorreo);
+        TextView nombre = view.findViewById(R.id.editTextEmail);
+        TextView correo = view.findViewById(R.id.editTextPassword);
 
         Usuario usuario = listaUsuarios.get(position);
         nombre.setText(usuario.getNombreUsuario());
