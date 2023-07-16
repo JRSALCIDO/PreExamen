@@ -40,6 +40,7 @@
                 android:textColorHint="@color/hint"/>
 
             <!-- Campo de entrada de contraseña -->
+
             <EditText
                 android:id="@+id/editTextPassword"
                 android:layout_width="match_parent"
@@ -59,30 +60,30 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/editTextPassword"
                 android:layout_marginTop="16dp"
-                android:textColor="@android:color/white"
+                style="@style/boton"
                 android:text="Ingresar" />
 
             <!-- Botón Registrarme -->
-            <Button
-                android:id="@+id/btnRegister"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/btnLogin"
-                android:layout_marginTop="16dp"
-                android:layout_alignParentStart="true"
-                android:textColor="@android:color/white"
-                android:text="Registrarme" />
+                android:gravity="center"
+                android:layout_marginTop="16dp">
+                <Button
+                    android:id="@+id/btnRegister"
+                    android:layout_below="@id/btnLogin"
+                    style="@style/boton"
+                    android:text="Registrarme" />
 
-            <!-- Botón Cerrar aplicación -->
-            <Button
-                android:id="@+id/btnExit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/btnLogin"
-                android:layout_marginTop="16dp"
-                android:layout_alignParentEnd="true"
-                android:textColor="@android:color/white"
-                android:text="Cerrar aplicación" />
+                <Button
+                    android:id="@+id/btnExit"
+                    android:layout_below="@id/btnLogin"
+                    style="@style/boton"
+                    android:text="Cerrar aplicación" />
+            </LinearLayout>
+
+
 
         </RelativeLayout>
     </LinearLayout>
