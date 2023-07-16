@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="#3B53B1" />  <!-- establece el color de fondo -->
-    <corners android:radius="100dp" />  <!-- establece el radio para redondear las esquinas -->
+    <corners android:radius="100dp" />   <!-- establece el radio para redondear las esquinas -->
 </shape>
